@@ -41,8 +41,8 @@ export default function usePeer(localStream) {
         }
 
         createPeer();
-        console.log(error);
-        console.log(peer);
+        // console.log(error);
+        // console.log(peer);
 
         // return function cleanup() {
         //     if (peer) peer.destroy();

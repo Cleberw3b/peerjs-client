@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import VideoLayout from '../components/videoLayout';
 import usePeer from '../hooks/usePeer'
 import useUserMedia from '../hooks/useUserMedia';
+import useCall from '../hooks/useCall';
 
 const alignCenter = { textAlign: "center" };
 
 const Home = () => {
   const localStream = useUserMedia();
-  const [remoteStream, setRemoteStream] = useState(null);
   const [remoteId, setRemoteId] = useState('');
   const [message, setMessage] = useState('');
-  const [peer, id, connections, error] = usePeer(localStream);
+  const [peer, id, connections, peerError] = usePeer(localStream);
+  const [calling, call, callError, remoteStream] = useCall();
 
   function setDelayMsg(msg) {
     setMessage(msg);
@@ -21,20 +22,9 @@ const Home = () => {
 
   async function makeCall() {
     if (peer && remoteId !== '') {
-      try {
-        setMessage("Connecting...");
-        const call = await peer.call(remoteId, localStream);
-        if (call) setMessage(null);
-        call.on('stream', (stream) => {
-          console.log(stream);
-          setRemoteStream(stream);
-        });
-        console.log(call);
-        call.on('error', error => console.log(error));
-        if (call) setMessage(null);
-      } catch (error) {
-        setDelayMsg(error.message);
-      }
+      setMessage("Connecting...");
+      await calling(peer, remoteId, localStream);
+      if (call) setMessage(null);
     } else {
       if (!peer)
         setDelayMsg("peer not created yet");
@@ -55,7 +45,10 @@ const Home = () => {
         {message}
       </p>
       <p style={alignCenter}>
-        {error && error.message}
+        peerError -> {peerError && peerError.message}
+      </p>
+      <p style={alignCenter}>
+        callError -> {callError && callError.message}
       </p>
       <span> Insert RemoteID </span>
       <input onChange={event => setRemoteId(event.target.value)} />
