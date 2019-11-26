@@ -1,7 +1,14 @@
 {
   "name": "peer-client",
   "version": "0.1.0",
-  "private": true,
+  "repository": "https://github.com/Cleberw3b/peerjs-client.git",
+  "author": "CleberW3b",
+  "license": "MIT",
+  "keywords": [
+    "nextjs",
+    "react",
+    "peerjs"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
