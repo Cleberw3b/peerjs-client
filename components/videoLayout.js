@@ -12,14 +12,14 @@ const styleCamara = {
 const localVideoDiv = {
   display: "flex",
   justifyContent: "center",
-  alignItens: "center",
+  alignItems: "center",
   pointerEvents: "none",
 }
 
 const remoteVideoDiv = {
   display: "flex",
   justifyContent: "center",
-  alignItens: "center",
+  alignItems: "center",
   pointerEvents: "none",
 }
 

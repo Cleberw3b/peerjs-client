@@ -1,5 +1,11 @@
 import Peer from 'peerjs'
 
+function arrayRemoveItem(array, item) {
+  var index = array.indexOf(item);
+  if (index < 0) return { error: 'item not found' };
+  return array.splice(index, 1);;
+}
+
 function formatDate(date) {
   return date
     .slice(0, 10)
@@ -50,3 +56,4 @@ module.exports.formatDate = formatDate;
 module.exports.getIntFromDate = getIntFromDate;
 module.exports.throttle = throttle;
 module.exports.createPeer = createPeer;
+module.exports.arrayRemoveItem = arrayRemoveItem;

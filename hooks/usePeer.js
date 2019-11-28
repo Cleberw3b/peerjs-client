@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-// import { createPeer } from "../public/js/util"
-
-const defaulPeer = 8156295
 
 export default function usePeer(localStream) {
     const [peer, setPeer] = useState(null);
     const [peerID, setPeerID] = useState(null);
-    const [error, setError] = useState(null);
+    const [peerError, setError] = useState(null);
     const [peerConnections, setPeerConnections] = useState([]);
 
     useEffect(() => {
@@ -47,7 +44,7 @@ export default function usePeer(localStream) {
         // return function cleanup() {
         //     if (peer) peer.destroy();
         // }
-    }, [peer, peerID, peerConnections, error])
+    }, [peer, peerID, peerConnections, peerError])
 
-    return [peer, peerID, peerConnections, error];
+    return { peer, peerID, peerConnections, peerError };
 }

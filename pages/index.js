@@ -10,8 +10,8 @@ const Home = () => {
   const localStream = useUserMedia();
   const [remoteId, setRemoteId] = useState('');
   const [message, setMessage] = useState('');
-  const [peer, id, connections, peerError] = usePeer(localStream);
-  const [calling, call, callError, remoteStream] = useCall();
+  const { peer, peerID, peerConnections, peerError } = usePeer(localStream);
+  const { calling, call, callError, remoteStream } = useCall();
 
   function setDelayMsg(msg) {
     setMessage(msg);
@@ -20,11 +20,17 @@ const Home = () => {
     }, 2000)
   }
 
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setMessage("");
+    }, 2000);
+    return clearTimeout(id);
+  }, [message])
+
   async function makeCall() {
     if (peer && remoteId !== '') {
       setMessage("Connecting...");
       await calling(peer, remoteId, localStream);
-      if (call) setMessage(null);
     } else {
       if (!peer)
         setDelayMsg("peer not created yet");
@@ -39,7 +45,7 @@ const Home = () => {
         Recording from camera and voice
       </h1>
       <p style={alignCenter}>
-        Your peerID is {id}
+        Your peerID is {peerID}
       </p>
       <p style={alignCenter}>
         {message}
