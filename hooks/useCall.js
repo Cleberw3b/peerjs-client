@@ -30,18 +30,18 @@ export default function useCall(setRemoteStream) {
                 thisCall.on('close', () => {
                     setRemoteStream(null);
                 });
-                thisCall.on('error', error => console.log(error));
+                thisCall.on('error', error => setError(error));
             } catch (error) {
                 setError(error)
-                console.log(error);
             }
         }
-        console.log(call, callError);
+        console.log(call);
+        console.log(callError);
         listen();
         // return function cleanup() {
         // 
         // }
-    }, [call, callError])
+    }, [call])
 
     return { calling, call, callError };
 }
