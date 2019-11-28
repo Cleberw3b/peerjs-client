@@ -3,29 +3,17 @@ import VideoLayout from '../components/videoLayout';
 import usePeer from '../hooks/usePeer'
 import useUserMedia from '../hooks/useUserMedia';
 import useCall from '../hooks/useCall';
+import useRemoteStream from '../hooks/useRemoteStream';
 
 const alignCenter = { textAlign: "center" };
 
 const Home = () => {
   const localStream = useUserMedia();
+  const [remoteStream, setRemoteStream] = useRemoteStream();
   const [remoteId, setRemoteId] = useState('');
   const [message, setMessage] = useState('');
-  const { peer, peerID, peerConnections, peerError } = usePeer(localStream);
-  const { calling, call, callError, remoteStream } = useCall();
-
-  function setDelayMsg(msg) {
-    setMessage(msg);
-    setTimeout(() => {
-      setMessage(null);
-    }, 2000)
-  }
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setMessage("");
-    }, 2000);
-    return clearTimeout(id);
-  }, [message])
+  const { peer, peerID, peerError } = usePeer(localStream, setRemoteStream);
+  const { calling, call, callError } = useCall(setRemoteStream);
 
   async function makeCall() {
     if (peer && remoteId !== '') {
@@ -33,9 +21,9 @@ const Home = () => {
       await calling(peer, remoteId, localStream);
     } else {
       if (!peer)
-        setDelayMsg("peer not created yet");
+        setMessage("peer not created yet");
       else if (remoteId === '')
-        setDelayMsg("insert id to connect");
+        setMessage("insert id to connect");
     }
   }
 

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 
-export default function usePeer(localStream) {
+var config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
+
+export default function usePeer(localStream, setRemoteStream) {
     const [peer, setPeer] = useState(null);
     const [peerID, setPeerID] = useState(null);
     const [peerError, setError] = useState(null);
-    const [peerConnections, setPeerConnections] = useState([]);
 
     useEffect(() => {
         const createPeer = async () => {
             try {
                 import('peerjs').then(() => {
-                    let newPeer = peer ? peer : new Peer();
+                    let newPeer = peer ? peer : new Peer(config);
                     setPeer(newPeer);
 
                     newPeer.on('open', () => {
@@ -18,10 +19,17 @@ export default function usePeer(localStream) {
                     });
 
                     newPeer.on('connection', conn => {
-                        peerConnections.push(conn);
+
                     });
 
                     newPeer.on('call', (call) => {
+                        // receive answer and set as remoteStream
+                        call.on('stream', (stream) => {
+                            setRemoteStream(stream);
+                        });
+                        call.on('close', () => {
+                            setRemoteStream(null);
+                        });
                         // Answer the call, providing our mediaStream
                         call.answer(localStream);
                     });
@@ -34,17 +42,17 @@ export default function usePeer(localStream) {
                 })
             } catch (error) {
                 console.log(error);
+                setError(error);
             }
         }
 
         createPeer();
-        // console.log(error);
-        // console.log(peer);
+        console.log(peerError);
 
         // return function cleanup() {
         //     if (peer) peer.destroy();
         // }
-    }, [peer, peerID, peerConnections, peerError])
+    }, [peer, peerID, peerError])
 
-    return { peer, peerID, peerConnections, peerError };
+    return { peer, peerID, peerError };
 }

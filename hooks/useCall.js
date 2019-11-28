@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-export default function useCall() {
+export default function useCall(setRemoteStream) {
     const [call, setCall] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null);
     const [callError, setError] = useState(null);
 
     const calling = useCallback(async (peer, remoteId, localStream) => {
@@ -12,7 +11,7 @@ export default function useCall() {
         } catch (error) {
             setError(error)
             console.log(error);
-        } calling
+        }
     }, []);
 
     useEffect(() => {
@@ -20,22 +19,25 @@ export default function useCall() {
             try {
                 if (!call) return;
                 let thisCall = call;
+                // receive answer and set as remoteStream
                 thisCall.on('stream', (stream) => {
                     setRemoteStream(stream);
                 });
-                thisCall.on('close', () => { });
+                thisCall.on('close', () => {
+                    setRemoteStream(null);
+                });
                 thisCall.on('error', error => console.log(error));
             } catch (error) {
                 setError(error)
                 console.log(error);
             }
         }
-        console.log(call, callError, remoteStream);
+        console.log(call, callError);
         listen();
         // return function cleanup() {
         // 
         // }
-    }, [call, callError, remoteStream])
+    }, [call, callError])
 
-    return { calling, call, callError, remoteStream };
+    return { calling, call, callError };
 }
