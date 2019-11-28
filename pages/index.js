@@ -42,7 +42,7 @@ const Home = () => {
         peerError -> {peerError && peerError.message}
       </p>
       <p style={alignCenter}>
-        callError -> {callError && callError.message}
+        callError -> {callError && callError.message || callError}
       </p>
       <span> Insert RemoteID </span>
       <input onChange={event => setRemoteId(event.target.value)} />

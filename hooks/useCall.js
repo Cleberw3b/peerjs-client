@@ -6,13 +6,17 @@ export default function useCall(setRemoteStream) {
 
     const calling = useCallback(async (peer, remoteId, localStream) => {
         try {
-            const newCall = await peer.call(remoteId, localStream);
-            setCall(newCall);
+            if (call && call.peer === remoteId && call.open) {
+                setError("alread connected")
+            } else {
+                const newCall = await peer.call(remoteId, localStream);
+                setCall(newCall);
+            }
         } catch (error) {
             setError(error)
             console.log(error);
         }
-    }, []);
+    }, [call]);
 
     useEffect(() => {
         const listen = async () => {
