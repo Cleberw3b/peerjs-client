@@ -7,7 +7,7 @@ export default function useCall(setRemoteStream) {
     const calling = useCallback(async (peer, remoteId, localStream) => {
         try {
             if (call && call.peer === remoteId && call.open) {
-                setError("alread connected")
+                setError("Alread connected");
             } else {
                 const newCall = await peer.call(remoteId, localStream);
                 setCall(newCall);
@@ -19,29 +19,20 @@ export default function useCall(setRemoteStream) {
     }, [call]);
 
     useEffect(() => {
-        const listen = async () => {
-            try {
-                if (!call) return;
-                let thisCall = call;
-                // receive answer and set as remoteStream
-                thisCall.on('stream', (stream) => {
-                    setRemoteStream(stream);
-                });
-                thisCall.on('close', () => {
-                    setRemoteStream(null);
-                });
-                thisCall.on('error', error => setError(error));
-            } catch (error) {
-                setError(error)
-            }
+        if (call) {
+            // receive answer and set as remoteStream
+            call.on('stream', (stream) => {
+                setRemoteStream(stream);
+            });
+            call.on('close', () => {
+                setRemoteStream(null);
+            });
+            call.on('error', error => setError(error));
         }
         console.log(call);
         console.log(callError);
-        listen();
-        // return function cleanup() {
-        // 
-        // }
+        return;
     }, [call])
 
-    return { calling, call, callError };
+    return { calling, call, callError, setCall };
 }

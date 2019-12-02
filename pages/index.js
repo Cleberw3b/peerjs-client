@@ -1,55 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import VideoLayout from '../components/videoLayout';
-import usePeer from '../hooks/usePeer'
+import useStream from '../hooks/useStream';
 import useUserMedia from '../hooks/useUserMedia';
-import useCall from '../hooks/useCall';
-import useRemoteStream from '../hooks/useRemoteStream';
 
-const alignCenter = { textAlign: "center" };
+const styleCamara = {
+  background: "black",
+  width: "100%",
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "collum"
+}
+
+const videoDiv = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  pointerEvents: "none",
+}
 
 const Home = () => {
   const localStream = useUserMedia();
-  const [remoteStream, setRemoteStream] = useRemoteStream();
-  const [remoteId, setRemoteId] = useState('');
-  const [message, setMessage] = useState('');
-  const { peer, peerID, peerError } = usePeer(localStream, setRemoteStream);
-  const { calling, call, callError } = useCall(setRemoteStream);
+  const [localVideoRef, handleLocalPlay] = useStream(localStream);
+  const [peer, setPeer] = useState(null);
+  const [peerId, setpeerId] = useState(null);
+  const [remoteId, setRemoteId] = useState(null);
 
-  async function makeCall() {
-    if (peer && remoteId !== '') {
-      setMessage("Connecting...");
-      await calling(peer, remoteId, localStream);
-    } else {
-      if (!peer)
-        setMessage("peer not created yet");
-      else if (remoteId === '')
-        setMessage("insert id to connect");
+  const isClient = typeof window === "object";
+
+  function handleWhenLoad() {
+    setPeer(window.getPeer());
+    setpeerId(window.getPeerId());
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isClient) {
+        handleWhenLoad();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function getID() {
+    if (isClient) {
+      setpeerId(window.getPeerId());
+    }
+  }
+
+  function makeCall() {
+    if (isClient) {
+      window.makeCall(remoteId); 'insert id to connect';
     }
   }
 
   return (
     <div>
-      <h1 style={alignCenter}>
+      <h1 style={{ textAlign: "center" }}>
         Recording from camera and voice
       </h1>
-      <p style={alignCenter}>
-        Your peerID is {peerID}
+      <p style={{ textAlign: "center" }}>
+        {peerId}
       </p>
-      <p style={alignCenter}>
-        {message}
-      </p>
-      <p style={alignCenter}>
-        peerError -> {peerError && peerError.message}
-      </p>
-      <p style={alignCenter}>
-        callError -> {callError && callError.message || callError}
+      <p id="span" style={{ textAlign: "center" }}>
+        {/* append Messages here */}
       </p>
       <span> Insert RemoteID </span>
       <input onChange={event => setRemoteId(event.target.value)} />
       <button onClick={() => makeCall()}> Call </button>
-      <VideoLayout localStream={localStream} remoteStream={remoteStream} />
+      <button onClick={() => getID()}> Get my ID </button>
+      <div style={styleCamara} >
+        <div style={videoDiv} >
+          <video id={"remoteVideo"} playsInline />
+        </div>
+        <div style={videoDiv} >
+          <video ref={localVideoRef} onCanPlay={handleLocalPlay} playsInline muted />
+        </div>
+      </div>
     </div>
   )
-
 }
 export default Home
