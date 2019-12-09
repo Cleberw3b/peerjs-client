@@ -30,7 +30,7 @@ export default function VideoLayout({ localStream = null, remoteStream = null })
   return (
     <>
       <div style={styleCamara} >
-        <div style={remoteVideoDiv} >
+        <div id="remoteVideo" style={remoteVideoDiv} >
           {remoteVideoRef ?
             <video ref={remoteVideoRef} onCanPlay={handleRemotePlay} autoPlay playsInline muted />
             : null
