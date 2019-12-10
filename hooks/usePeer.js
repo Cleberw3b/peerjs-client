@@ -1,63 +1,101 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { getRandomId } from "../public/js/util";
 
-var config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
+const audioOnlyConfig = { audio: true, video: false };
+const config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
+const localConfig = {
+    host: '127.0.0.1',
+    // secure: true,
+    port: 5000,
+    path: '/peerjs',
+    config: {
+        'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }]
+    },
+    debug: 1 // from 0 up to 3
+};
 
-export default function usePeer(localStream, setRemoteStream) {
-    const [peer, setPeer] = useState(null);
-    const [peerError, setError] = useState(null);
+export default function usePeer() {
+    const [myPeer, setPeer] = useState(null);
+    const [myPeerID, setMyPeerID] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [remoteStream, setRemoteStream] = useState(null)
 
-    const createPeer = useCallback(async () => {
-        try {
-            import('peerjs').then(() => {
-                let myPeer = peer ? peer : new Peer(config);
-                setPeer(myPeer);
-            })
-        } catch (error) {
-            setError(error)
-        }
-    }, [peer]);
-
-    useEffect(() => {
-        const listen = () => {
-            try {
-                if (!peer) return;
-
-                peer.on('open', () => { });
-
-                peer.on('connection', dataConnection => { });
-
-                peer.on('call', (call) => {
-                    // Answer the call, providing our mediaStream
-                    call.answer(localStream);
-                    // receive answer and set as remoteStream
-                    call.on('stream', (stream) => {
-                        setRemoteStream(stream);
-                    });
-                    call.on('close', () => {
-                        setRemoteStream(null);
-                    });
-                });
-
-                peer.on('close', () => { });
-                peer.on('error', error => setError(error));
-
-            } catch (error) {
-                console.log(error);
-                setError(error);
+    const addMessage = (message) => {
+        console.log(message);
+        setMessages([
+            ...messages,
+            {
+                date: Date.now(),
+                message: message
             }
-        }
-        createPeer();
-        listen();
-        console.log(peerError);
-        console.log(peer);
+        ]);
+    };
 
-    }, [peer, peerError])
+    const cleanUp = () => {
+        if (myPeer) {
+            myPeer.disconnect();
+            myPeer.destroy();
+        }
+        setPeer(null);
+        setMyPeerID(null);
+    }
 
     useEffect(() => {
+        import('peerjs').then(() => {
+            const peer = new Peer(getRandomId(), localConfig);
+
+            peer.on('open', () => {
+                setPeer(peer);
+                setMyPeerID(peer.id);
+            })
+
+            peer.on('call', (call) => {
+                addMessage('receiving call from ' + call.peer)
+
+                navigator.mediaDevices.getUserMedia(audioOnlyConfig)
+                    .then((stream) => {
+                        // Answer the call with an A/V stream.
+                        call.answer(stream);
+
+                        // Play the remote stream
+                        call.on('stream', (remoteStream) => {
+                            console.log(remoteStream);
+                            setRemoteStream(remoteStream);
+                        });
+
+                        call.on('close', () => {
+                            addMessage("The call has ended");
+                            setRemoteStream(null)
+                        });
+
+                        call.on('error', (error) => {
+                            addMessage(error);
+                            setRemoteStream(null)
+                        });
+                    }).catch(error => { console.log(error); });
+            });
+
+            peer.on('disconnected', () => {
+                addMessage("Peer desconnected");
+                cleanUp()
+            });
+
+            peer.on('close', () => {
+                setPeerInfo("Peer closed remotetly");
+                cleanUp()
+            });
+
+            peer.on('error', (error) => {
+                console.log("peer error", error);
+                cleanUp()
+            });
+
+        }).catch(error => { console.log(error) });
+
         return () => {
-            peer.destroy();
+            cleanUp()
         }
     }, [])
 
-    return { peer, peerError, createPeer };
+    return { myPeer, myPeerID, remoteStream };
 }

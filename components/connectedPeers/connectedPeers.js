@@ -1,0 +1,22 @@
+import React, { useState, useEffect } from 'react';
+import "./connectedPeers.scss"
+
+export default function ConnectedPeers({ connectedPeers, myPeerID, callAvailable }) {
+
+    return (
+        <div className="connected-peers">
+            <h1>Peers Available</h1>
+            <div className="connected-peers-box">
+                {connectedPeers && connectedPeers.map(peerID => (
+                    <span key={peerID} className="peer-id">
+                        {peerID === myPeerID && (`${peerID} Local`)}
+                        {peerID !== myPeerID && (`${peerID} Remote`)}
+                    </span>
+                ))}
+            </div>
+            <div className="connected-peers-call-button">
+                <button onClick={() => callAvailable()}>Call Peers</button>
+            </div>
+        </div>
+    )
+}

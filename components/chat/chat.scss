@@ -1,0 +1,32 @@
+.chat {
+  background: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  margin: 12px 12px 12px 0;
+  height: calc(100% - 270px);
+}
+
+.chat > h1 {
+  background: grey;
+  text-align: center;
+}
+
+.chat-message-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.chat-message {
+  color: black;
+  margin-left: 12px;
+}
+
+.chat-send-box {
+  display: flex;
+  justify-content: center;
+}

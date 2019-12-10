@@ -1,16 +1,34 @@
-const node_env = process.env.NODE_ENV;
-const isDevelopment = node_env === "development";
-const isProduction = node_env === "production";
-const isTest = node_env === "test";
+const withPlugins = require("next-compose-plugins");
+const sass = require("@zeit/next-sass");
+const env = process.env.NODE_ENV;
+const isDevelopment = env === "development";
+const isProduction = env === "production";
+const isTest = env === "test";
 
 if (isDevelopment) {
   require("dotenv").config();
 }
 
-exports.default = {
+var envVariables = {
+  TEST: process.env.TEST,
+  ENVIRONMENT: process.env.NODE_ENV
+};
+
+const nextConfig = {
   distDir: "build",
   target: "serverless",
-  env: {
-    TEST: process.env.TEST
-  }
+  env: envVariables
 };
+
+module.exports = withPlugins(
+  [
+    [
+      sass,
+      {
+        /* config for sass */
+      }
+    ]
+    // your other plugins here
+  ],
+  { nextConfig }
+);

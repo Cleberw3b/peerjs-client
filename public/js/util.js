@@ -1,5 +1,3 @@
-import Peer from 'peerjs'
-
 function arrayRemoveItem(array, item) {
   var index = array.indexOf(item);
   if (index < 0) return { error: 'item not found' };
@@ -37,23 +35,14 @@ function throttle(func, delay) {
   };
 }
 
-function createPeer(id = null, options = null) {
-  let peer = {}
-  if (id && options) {
-    peer = new Peer(id, options);
-  } else if (options) {
-    peer = new Peer(options);
-  } else if (id) {
-    peer = new Peer(id);
-  } else {
-    peer = new Peer();
-  }
-  console.log(peer);
-  setPeer(peer);
+function getRandomId() {
+  let min = Math.ceil(10000000);
+  let max = Math.floor(99999999);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports.formatDate = formatDate;
 module.exports.getIntFromDate = getIntFromDate;
 module.exports.throttle = throttle;
-module.exports.createPeer = createPeer;
 module.exports.arrayRemoveItem = arrayRemoveItem;
+module.exports.getRandomId = getRandomId;

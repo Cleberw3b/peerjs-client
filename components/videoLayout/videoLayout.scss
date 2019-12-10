@@ -1,0 +1,47 @@
+.conference-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.caller-stream {
+  width: 100%;
+  min-height: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.caller-stream > video {
+  width: 98%;
+}
+
+.listeners-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.listener-stream {
+  width: 24.5%;
+  height: 120px;
+}
+
+.listener-stream video {
+  width: 100%;
+}
+
+.listener-stream.l1 {
+  background: chartreuse;
+}
+
+.listener-stream.l2 {
+  background: chocolate;
+}
+
+.listener-stream.l3 {
+  background: cyan;
+}
+
+.listener-stream.l4 {
+  background: darkmagenta;
+}

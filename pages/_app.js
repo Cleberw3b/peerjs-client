@@ -2,6 +2,7 @@
 import React from "react";
 import App from "next/app";
 import Layout from "../components/layout/layout";
+import "../public/static/styles/theme.scss";
 
 class MyApp extends App {
   render() {
@@ -10,11 +11,6 @@ class MyApp extends App {
     return (
       <Layout>
         <Component {...pageProps} />
-        <style global jsx>{`
-        body {
-          margin: 0;
-        }
-      `}</style>
       </Layout>
     )
   }
