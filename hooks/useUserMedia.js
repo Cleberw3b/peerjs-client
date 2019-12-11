@@ -19,8 +19,8 @@ export default function useUserMedia() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(CAPTURE_OPTIONS);
         setMediaStream(stream);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
       }
     }
 

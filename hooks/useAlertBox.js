@@ -73,8 +73,8 @@ const useAlertBox = (type, timeout = 2000) => {
   const [show, setShow] = useState(null);
   const height = useHeightToTop();
 
+  // TODO -> Implement diferent types
   // types.indexOf(type) > -1 ? type
-
 
   const showAlert = useCallback(
     (_message) => {
@@ -106,7 +106,6 @@ const useAlertBox = (type, timeout = 2000) => {
       <div style={alertBoxMessage}>{message}</div>
     </div>
   )
-
 
   return { showAlert };
 };

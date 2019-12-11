@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getRandomId } from "../public/js/util";
 
 const audioOnlyConfig = { audio: true, video: false };
+
 const config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
+
 const localConfig = {
     host: '127.0.0.1',
     // secure: true,
@@ -18,7 +20,7 @@ export default function usePeer() {
     const [myPeer, setPeer] = useState(null);
     const [myPeerID, setMyPeerID] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [remoteStream, setRemoteStream] = useState(null)
+    const [peerRemoteStream, setPeerRemoteStream] = useState(null)
 
     const addMessage = (message) => {
         console.log(message);
@@ -59,18 +61,17 @@ export default function usePeer() {
 
                         // Play the remote stream
                         call.on('stream', (remoteStream) => {
-                            console.log(remoteStream);
-                            setRemoteStream(remoteStream);
+                            setPeerRemoteStream(remoteStream);
                         });
 
                         call.on('close', () => {
                             addMessage("The call has ended");
-                            setRemoteStream(null)
+                            setPeerRemoteStream(null)
                         });
 
                         call.on('error', (error) => {
                             addMessage(error);
-                            setRemoteStream(null)
+                            setPeerRemoteStream(null)
                         });
                     }).catch(error => { console.log(error); });
             });
@@ -81,7 +82,7 @@ export default function usePeer() {
             });
 
             peer.on('close', () => {
-                setPeerInfo("Peer closed remotetly");
+                addMessage("Peer closed remotetly");
                 cleanUp()
             });
 
@@ -97,5 +98,5 @@ export default function usePeer() {
         }
     }, [])
 
-    return { myPeer, myPeerID, remoteStream };
+    return { myPeer, myPeerID, peerRemoteStream };
 }

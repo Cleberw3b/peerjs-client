@@ -3,7 +3,7 @@
   flex-direction: column;
 }
 
-.caller-stream {
+.main-stream {
   width: 100%;
   min-height: 420px;
   display: flex;
@@ -11,7 +11,7 @@
   align-items: center;
 }
 
-.caller-stream > video {
+.main-stream > video {
   width: 98%;
 }
 

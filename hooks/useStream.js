@@ -1,15 +1,20 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 
-export default function useStream(mediaStream) {
+export default function useStream() {
     const videoRef = useRef();
 
-    if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
-        videoRef.current.srcObject = mediaStream;
-    }
+    const setStream = useCallback(
+        (stream) => {
+            if (stream && videoRef.current && !videoRef.current.srcObject) {
+                videoRef.current.srcObject = stream;
+            }
+        },
+        [videoRef]
+    )
 
     const handleCanPlay = () => {
         videoRef.current.play();
     }
 
-    return [videoRef, handleCanPlay];
+    return [setStream, videoRef, handleCanPlay];
 };

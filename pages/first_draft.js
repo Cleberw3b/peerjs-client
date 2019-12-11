@@ -56,10 +56,6 @@ const Home = () => {
   }
 
   useEffect(() => {
-    console.log(call);
-  }, [call])
-
-  useEffect(() => {
     if (myPeer) {
       return () => {
         myPeer.disconnect();
@@ -81,7 +77,6 @@ const Home = () => {
       })
 
       peer.on('connection', (dataConnection) => {
-        console.log(dataConnection);
       })
 
       peer.on('call', (call) => {
@@ -135,7 +130,6 @@ const Home = () => {
     if (isClient) {
       if (remoteId === '') {
         setCallMessage('insert id to connect');
-        console.log('insert id to connect');
         return;
       }
 
@@ -145,9 +139,6 @@ const Home = () => {
           if (localstream && localVideoRef.current && !localVideoRef.current.srcObject) {
             localVideoRef.current.srcObject = localstream;
           }
-          // connectedPeers.forEach(remotePeer => {
-
-          // });
 
           let thisCall = myPeer.call(remoteId, localstream);
           setCall(thisCall);
