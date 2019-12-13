@@ -7,11 +7,11 @@ export default function useConnectedPeers() {
     useEffect(() => {
         const ws = new WebSocket(socketURL);
 
-        ws.onopen = () => {
+        ws.onopen = (event) => {
             console.log('connected');
         };
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
             console.log('disconnected');
         };
 
@@ -26,6 +26,7 @@ export default function useConnectedPeers() {
 
         return () => {
             ws.close();
+            connectedPeers = [];
             setConnectedPeers([]);
         };
     }, [])

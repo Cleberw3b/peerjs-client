@@ -1,71 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ConnectedPeers from '../components/connectedPeers/connectedPeers';
 import Chat from '../components/chat/chat';
-import CallButton from '../components/callButton/callButton';
 import useConnectedPeers from '../hooks/useConnectedPeers';
 import usePeer from '../hooks/usePeer';
 import useStream from '../hooks/useStream';
 import "../components/videoLayout/videoLayout.scss"
+import useRemoteStreams from '../hooks/useRemoteStream';
+import useUserMedia from '../hooks/useUserMedia';
 import useAlertBox from '../hooks/useAlertBox';
-
-const userMediaConfig = { audio: { echoCancellation: true, noiseSuppression: true }, video: { facingMode: "user" } };
 
 const Home = () => {
 
-  const connectedPeers = useConnectedPeers();
-  const { myPeer, myPeerID, peerRemoteStream } = usePeer();
-  const [showSideContent, setShowSideContent] = useState(false);
-  const [setRemoteStream, remoteVideoRef, handleCanPlayRemote] = useStream();
+  const localstream = useUserMedia();
   const [setLocalStream, localVideoRef, handleCanPlayLocal] = useStream();
-  const [isCalling, setIsCalling] = useState(false);
-  const { showAlert } = useAlertBox();
-  let remoteId;
+  const connectedPeers = useConnectedPeers();
+  const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams()
+  const refsArray = useRef([]);
+  const [myPeer, myPeerID] = usePeer(addRemoteStream);
+  const [showConference, setShowConference] = useState(false);
 
   useEffect(() => {
-    if (peerRemoteStream)
-      setRemoteStream(peerRemoteStream)
-  }, [peerRemoteStream])
+    console.log(remoteStreams);
+    remoteStreams.map(streamData =>
+      refsArray.current[streamData.peerId].srcObject = streamData.stream)
+  }, [remoteStreams])
 
   useEffect(() => {
-    if (connectedPeers && connectedPeers.length > 0 && myPeerID !== undefined) {
-      setShowSideContent(true);
-      remoteId = connectedPeers.find(peer => peer !== myPeerID)
+    setLocalStream(localstream);
+  }, [localstream])
+
+  useEffect(() => {
+    if (localstream && connectedPeers && connectedPeers.length > 0 && myPeerID !== undefined) {
+      setShowConference(true);
     }
+  }, [localstream, connectedPeers, myPeerID])
 
-  }, [connectedPeers, myPeerID])
+  const call = (remoteid) => {
+    let call = myPeer.call(remoteid, localstream);
 
-  const callAvailable = () => {
-    makeCall()
+    call.on('stream', (remoteStream) => {
+      addRemoteStream(remoteStream, call.peer);
+      console.log('Connected to ' + call.peer);
+    });
+
+    call.on('close', () => {
+      console.log("call closed");
+      call.close();
+    });
+
+    call.on('error', (error) => {
+      console.log("call error", error);
+      call.close();
+    });
   }
 
-  function makeCall() {
-    if (remoteId === '') {
-      showAlert('insert id to connect');
+  const makeCall = () => {
+    if (connectedPeers && connectedPeers.length > 0 === '') {
+      console.log('No Peers to connect with');
       return;
     }
 
-    navigator.mediaDevices.getUserMedia(userMediaConfig)
-      .then(function (localstream) {
-        let call = myPeer.call(remoteId, localstream);
-        setIsCalling(true);
-        setLocalStream(localstream);
-        call.on('stream', (remoteStream) => {
-          setRemoteStream(remoteStream);
-          showAlert('Connected to ' + call.peer);
-        });
-
-        call.on('close', () => {
-          showAlert("call closed");
-          call.close();
-        });
-
-        call.on('error', (error) => {
-          console.log("call error", error);
-          call.close();
-        });
-      }).catch((error) => {
-        console.log('Failed to get local stream', error);
-      });
+    let peerToConnect = connectedPeers.map((peer) => peer);
+    let myPeerIndex = peerToConnect.findIndex(peer => peer === myPeerID);
+    if (myPeerIndex >= 0) peerToConnect.splice(myPeerIndex, 1);
+    for (const peer of peerToConnect) {
+      call(peer);
+      console.log("calling peer " + peer)
+    }
   }
 
   return (
@@ -76,24 +77,24 @@ const Home = () => {
           <h1>Democracy Earth ID Validation Conference</h1>
           <div className="conference-layout" >
             <div className="main-stream">
-              {isCalling ? (<video ref={localVideoRef} onCanPlay={handleCanPlayLocal} autoPlay playsInline muted />) :
-                (<video ref={remoteVideoRef} onCanPlay={handleCanPlayRemote} autoPlay playsInline muted />)
-              }
+              <video ref={localVideoRef} onCanPlay={handleCanPlayLocal} autoPlay playsInline muted />
             </div>
             <div className="listeners-box">
-              <div className="listener-stream l1" >
-                {isCalling ? (<video ref={remoteVideoRef} onCanPlay={handleCanPlayRemote} autoPlay playsInline muted />) :
-                  (<video ref={localVideoRef} onCanPlay={handleCanPlayLocal} autoPlay playsInline muted />)
-                }
-              </div>
+              {remoteStreams.map((dataStream, i) => (
+                <div key={dataStream.peerId} className="listener-stream">
+                  <video
+                    ref={ref => refsArray.current[dataStream.peerId] = ref}
+                    autoPlay playsInline muted />
+                  {dataStream.peerId}
+                </div>
+              ))}
             </div>
           </div>
-          {/* <CallButton /> */}
         </div>
         <div className="side-content">
-          {showSideContent &&
+          {showConference &&
             (<>
-              <ConnectedPeers connectedPeers={connectedPeers} myPeerID={myPeerID} callAvailable={callAvailable} />
+              <ConnectedPeers connectedPeers={connectedPeers} myPeerID={myPeerID} call={makeCall} />
               <Chat />
             </>)
           }
@@ -102,5 +103,9 @@ const Home = () => {
     </>
   )
 }
+
+Home.getInitialProps = async () => {
+  return { data: "" };
+};
 
 export default Home

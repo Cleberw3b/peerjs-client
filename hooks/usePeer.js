@@ -16,11 +16,10 @@ const localConfig = {
     debug: 1 // from 0 up to 3
 };
 
-export default function usePeer() {
+export default function usePeer(addRemoteStream) {
     const [myPeer, setPeer] = useState(null);
     const [myPeerID, setMyPeerID] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [peerRemoteStream, setPeerRemoteStream] = useState(null)
 
     const addMessage = (message) => {
         console.log(message);
@@ -61,17 +60,17 @@ export default function usePeer() {
 
                         // Play the remote stream
                         call.on('stream', (remoteStream) => {
-                            setPeerRemoteStream(remoteStream);
+                            addRemoteStream(remoteStream, call.peer);
                         });
 
                         call.on('close', () => {
                             addMessage("The call has ended");
-                            setPeerRemoteStream(null)
+                            // setPeerRemoteStream(null)
                         });
 
                         call.on('error', (error) => {
                             addMessage(error);
-                            setPeerRemoteStream(null)
+                            // setPeerRemoteStream(null)
                         });
                     }).catch(error => { console.log(error); });
             });
@@ -98,5 +97,5 @@ export default function usePeer() {
         }
     }, [])
 
-    return { myPeer, myPeerID, peerRemoteStream };
+    return [myPeer, myPeerID];
 }

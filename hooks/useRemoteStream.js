@@ -16,13 +16,16 @@ export default function useRemoteStreams() {
         [remoteStreams],
     )
 
-    // OLD METHOD
-    // const changeRemoteStream = useCallback(
-    //     (stream) => {
-    //         setRemoteStream(stream);
-    //     },
-    //     [remoteStream],
-    // )
-
-    return [addRemoteStream, remoteStreams];
+    const removeRemoteStream = useCallback(
+        peerId => {
+            setRemoteStreams(remoteStreams => {
+                let index = remoteStreams.findIndex(remote => remote.peerId === peerId);
+                if (index < 0) return;
+                remoteStreams.splice(index, 1);
+                return [...remoteStreams]
+            })
+        },
+        [remoteStreams],
+    )
+    return [remoteStreams, addRemoteStream, removeRemoteStream];
 };
