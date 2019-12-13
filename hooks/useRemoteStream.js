@@ -1,15 +1,28 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
-export default function useRemoteStream() {
+export default function useRemoteStreams() {
 
-    const [remoteStream, setRemoteStream] = useState(null)
+    const [remoteStreams, setRemoteStreams] = useState([]);
 
-    const changeRemoteStream = useCallback(
-        (stream) => {
-            setRemoteStream(stream);
+    const addRemoteStream = useCallback(
+        (stream, peerId) => {
+            setRemoteStreams(remoteStreams => {
+                if (!stream || !peerId) return [...remoteStreams];
+                if (remoteStreams.length > 3) return [...remoteStreams];
+                if (remoteStreams.some(remote => remote.peerId === peerId)) return [...remoteStreams];
+                return [...remoteStreams, { peerId: peerId, stream: stream }]
+            })
         },
-        [remoteStream],
+        [remoteStreams],
     )
 
-    return [remoteStream, changeRemoteStream];
+    // OLD METHOD
+    // const changeRemoteStream = useCallback(
+    //     (stream) => {
+    //         setRemoteStream(stream);
+    //     },
+    //     [remoteStream],
+    // )
+
+    return [addRemoteStream, remoteStreams];
 };

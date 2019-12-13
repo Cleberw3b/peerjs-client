@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "./connectedPeers.scss"
 
-export default function ConnectedPeers({ connectedPeers, myPeerID, callAvailable }) {
+export default function ConnectedPeers({ connectedPeers, myPeerID, call }) {
 
     return (
         <div className="connected-peers">
@@ -15,7 +15,7 @@ export default function ConnectedPeers({ connectedPeers, myPeerID, callAvailable
                 ))}
             </div>
             <div className="connected-peers-call-button">
-                <button onClick={() => callAvailable()}>Call Peers</button>
+                <button onClick={() => call()}>Call Peers</button>
             </div>
         </div>
     )

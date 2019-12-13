@@ -107,7 +107,7 @@ const useAlertBox = (type, timeout = 2000) => {
     </div>
   )
 
-  return { showAlert };
+  return showAlert;
 };
 
 export default useAlertBox;

@@ -6,10 +6,10 @@ const ratios = new Map([
   ["portrait", { width: 375, height: 720 }]
 ])
 
-const CAPTURE_OPTIONS = {
-  audio: true,
+const userMediaConfig = {
+  audio: { echoCancellation: true, noiseSuppression: true },
   video: { facingMode: "user" }
-}
+};
 
 export default function useUserMedia() {
   const [mediaStream, setMediaStream] = useState(null);
@@ -17,7 +17,7 @@ export default function useUserMedia() {
   useEffect(() => {
     const enableStream = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia(CAPTURE_OPTIONS);
+        const stream = await navigator.mediaDevices.getUserMedia(userMediaConfig);
         setMediaStream(stream);
       } catch (error) {
         console.log(error);

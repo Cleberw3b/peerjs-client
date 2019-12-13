@@ -4,7 +4,7 @@ export default function useStream() {
     const videoRef = useRef();
 
     const setStream = useCallback(
-        (stream) => {
+        (stream) => {            
             if (stream && videoRef.current && !videoRef.current.srcObject) {
                 videoRef.current.srcObject = stream;
             }

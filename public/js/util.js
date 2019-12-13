@@ -1,7 +1,7 @@
 function arrayRemoveItem(array, item) {
   var index = array.indexOf(item);
   if (index < 0) return { error: 'item not found' };
-  return array.splice(index, 1);;
+  return array.splice(index, 1);
 }
 
 function formatDate(date) {
