@@ -82,11 +82,14 @@ const Home = () => {
       peer.on('call', (call) => {
         setCallMessage('receiving call from ' + call.peer);
         // TODO change constraints to be audio only
-        navigator.mediaDevices.getUserMedia(audioOnly)
-          .then((stream) => {
+        navigator.mediaDevices.getUserMedia(userMediaConfig)
+          .then((localstream) => {
+            if (localstream && localVideoRef.current && !localVideoRef.current.srcObject) {
+              localVideoRef.current.srcObject = localstream;
+            }
             setCall(call);
             // Answer the call with an A/V stream.
-            call.answer(stream);
+            call.answer(localstream);
 
             // Play the remote stream
             call.on('stream', (remoteStream) => {
