@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import useConnectedPeers from '../hooks/useConnectedPeers';
+import useWebSocket from '../hooks/useWebSocket';
 
 const styleCamara = {
   background: "black",
@@ -42,7 +42,7 @@ const Home = () => {
   const [call, setCall] = useState(null);
   const [peerInfo, setPeerInfo] = useState(null);
   const [callMessage, setCallMessage] = useState(null);
-  const connectedPeers = useConnectedPeers();
+  const { connectedPeers } = useWebSocket();
   const isClient = typeof window === "object";
 
   const remoteVideoRef = useRef();

@@ -19,18 +19,6 @@ const localConfig = {
 export default function usePeer(addRemoteStream) {
     const [myPeer, setPeer] = useState(null);
     const [myPeerID, setMyPeerID] = useState(null);
-    const [messages, setMessages] = useState([]);
-
-    const addMessage = (message) => {
-        console.log(message);
-        setMessages([
-            ...messages,
-            {
-                date: Date.now(),
-                message: message
-            }
-        ]);
-    };
 
     const cleanUp = () => {
         if (myPeer) {
@@ -43,7 +31,7 @@ export default function usePeer(addRemoteStream) {
 
     useEffect(() => {
         import('peerjs').then(() => {
-            const peer = new Peer(getRandomId(), localConfig);
+            const peer = peer ? peer : new Peer(getRandomId(), localConfig);
 
             peer.on('open', () => {
                 setPeer(peer);
@@ -51,7 +39,7 @@ export default function usePeer(addRemoteStream) {
             })
 
             peer.on('call', (call) => {
-                addMessage('receiving call from ' + call.peer)
+                console.log('receiving call from ' + call.peer)
 
                 navigator.mediaDevices.getUserMedia(audioOnlyConfig)
                     .then((stream) => {
@@ -64,24 +52,24 @@ export default function usePeer(addRemoteStream) {
                         });
 
                         call.on('close', () => {
-                            addMessage("The call has ended");
+                            console.log("The call has ended");
                             // setPeerRemoteStream(null)
                         });
 
                         call.on('error', (error) => {
-                            addMessage(error);
+                            console.log(error);
                             // setPeerRemoteStream(null)
                         });
                     }).catch(error => { console.log(error); });
             });
 
             peer.on('disconnected', () => {
-                addMessage("Peer desconnected");
+                console.log("Peer desconnected");
                 cleanUp()
             });
 
             peer.on('close', () => {
-                addMessage("Peer closed remotetly");
+                console.log("Peer closed remotetly");
                 cleanUp()
             });
 

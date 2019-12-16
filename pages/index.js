@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ConnectedPeers from '../components/connectedPeers/connectedPeers';
 import Chat from '../components/chat/chat';
-import useConnectedPeers from '../hooks/useConnectedPeers';
+import useWebSocket from '../hooks/useWebSocket';
 import usePeer from '../hooks/usePeer';
 import useStream from '../hooks/useStream';
-import "../components/videoLayout/videoLayout.scss"
 import useRemoteStreams from '../hooks/useRemoteStream';
 import useUserMedia from '../hooks/useUserMedia';
 import useAlertBox from '../hooks/useAlertBox';
+import "../components/videoLayout/videoLayout.scss"
 
 const Home = () => {
 
   const localstream = useUserMedia();
   const [setLocalStream, localVideoRef, handleCanPlayLocal] = useStream();
-  const connectedPeers = useConnectedPeers();
+  const { connectedPeers } = useWebSocket();
   const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams()
   const refsArray = useRef([]);
   const [myPeer, myPeerID] = usePeer(addRemoteStream);
@@ -95,7 +95,7 @@ const Home = () => {
           {showConference &&
             (<>
               <ConnectedPeers connectedPeers={connectedPeers} myPeerID={myPeerID} call={makeCall} />
-              <Chat />
+              <Chat myPeerID={myPeerID} />
             </>)
           }
         </div>
