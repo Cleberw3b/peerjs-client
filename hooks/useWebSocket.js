@@ -4,7 +4,7 @@ export default function useWebSocket() {
     const [socket, setSocket] = useState(null);
     const [connectedPeers, setConnectedPeers] = useState([]);
     const [messages, setMessages] = useState([]);
-    const socketURL = 'ws://localhost:5050';
+    const socketURL = 'ws://138.68.7.115:5050';
 
     const getPeers = () => {
         return JSON.stringify({ type: 'peers' })
@@ -21,7 +21,6 @@ export default function useWebSocket() {
 
     const sendMessage = useCallback(
         (peerId, message) => {
-            console.log(peerId, message);
             let data = JSON.stringify({
                 type: 'message',
                 message: {
@@ -31,11 +30,13 @@ export default function useWebSocket() {
                 }
             })
             socket.send(data);
-        }, []
+        }
     )
 
     useEffect(() => {
         const ws = socket ? socket : new WebSocket(socketURL);
+
+        setSocket(ws);
 
         ws.onopen = (event) => {
             console.log('connected');
@@ -50,7 +51,6 @@ export default function useWebSocket() {
 
         ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
-            console.log(data);
             switch (data.type) {
                 case 'message':
                     setMessages(messages => [
@@ -75,8 +75,6 @@ export default function useWebSocket() {
         ws.onerror = (error) => {
             console.log(error);
         };
-
-        setSocket(ws);
 
         return () => {
             ws.close();

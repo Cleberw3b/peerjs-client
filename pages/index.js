@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ConnectedPeers from '../components/connectedPeers/connectedPeers';
 import Chat from '../components/chat/chat';
 import useWebSocket from '../hooks/useWebSocket';
@@ -14,13 +14,12 @@ const Home = () => {
   const localstream = useUserMedia();
   const [setLocalStream, localVideoRef, handleCanPlayLocal] = useStream();
   const { connectedPeers } = useWebSocket();
-  const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams()
+  const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams();
   const refsArray = useRef([]);
   const [myPeer, myPeerID] = usePeer(addRemoteStream);
   const [showConference, setShowConference] = useState(false);
 
   useEffect(() => {
-    console.log(remoteStreams);
     remoteStreams.map(streamData =>
       refsArray.current[streamData.peerId].srcObject = streamData.stream)
   }, [remoteStreams])
@@ -82,10 +81,8 @@ const Home = () => {
             <div className="listeners-box">
               {remoteStreams.map((dataStream, i) => (
                 <div key={dataStream.peerId} className="listener-stream">
-                  <video
-                    ref={ref => refsArray.current[dataStream.peerId] = ref}
+                  <video ref={ref => refsArray.current[dataStream.peerId] = ref}
                     autoPlay playsInline muted />
-                  {dataStream.peerId}
                 </div>
               ))}
             </div>

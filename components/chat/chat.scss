@@ -2,6 +2,7 @@
   background: whitesmoke;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   border-radius: 12px;
   margin: 12px 12px 12px 0;
   height: calc(100% - 270px);
@@ -16,17 +17,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 100%;
+  padding: 12px;
   overflow-x: hidden;
   overflow-y: scroll;
+  overflow-wrap: break-word;
 }
 
 .chat-message {
   color: black;
-  margin-left: 12px;
 }
 
 .chat-send-box {
   display: flex;
   justify-content: center;
+  padding: 12px;
+}
+
+.chat-send-box > input {
+  width: 100%;
 }

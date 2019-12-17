@@ -2,11 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getRandomId } from "../public/js/util";
 
 const audioOnlyConfig = { audio: true, video: false };
+const userMediaConfig = {
+    audio: { echoCancellation: true, noiseSuppression: true },
+    video: { facingMode: "user" }
+};
 
 const config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
 
 const localConfig = {
-    host: '127.0.0.1',
+    host: '138.68.7.115',
     // secure: true,
     port: 5000,
     path: '/peerjs',
@@ -41,7 +45,7 @@ export default function usePeer(addRemoteStream) {
             peer.on('call', (call) => {
                 console.log('receiving call from ' + call.peer)
 
-                navigator.mediaDevices.getUserMedia(audioOnlyConfig)
+                navigator.mediaDevices.getUserMedia(userMediaConfig)
                     .then((stream) => {
                         // Answer the call with an A/V stream.
                         call.answer(stream);
