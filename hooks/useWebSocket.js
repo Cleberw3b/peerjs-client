@@ -4,7 +4,7 @@ export default function useWebSocket() {
     const [socket, setSocket] = useState(null);
     const [connectedPeers, setConnectedPeers] = useState([]);
     const [messages, setMessages] = useState([]);
-    const socketURL = 'ws://138.68.7.115:5050';
+    const socketURL = 'wss://live.democracy.earth:5050';
 
     const getPeers = () => {
         return JSON.stringify({ type: 'peers' })

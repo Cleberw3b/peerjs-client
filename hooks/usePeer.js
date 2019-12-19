@@ -10,17 +10,15 @@ const userMediaConfig = {
 const config = { 'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }] };
 
 const localConfig = {
-    host: '138.68.7.115',
-    // secure: true,
+    host: 'live.democracy.earth',
+    secure: true,
     port: 5000,
     path: '/peerjs',
-    config: {
-        'iceServers': [{ 'urls': ['stun:stun.l.google.com:19302'] }]
-    },
-    debug: 1 // from 0 up to 3
+    config,
+    debug: 0 // from 0 up to 3
 };
 
-export default function usePeer(addRemoteStream) {
+export default function usePeer(addRemoteStream, removeRemoteStream) {
     const [myPeer, setPeer] = useState(null);
     const [myPeerID, setMyPeerID] = useState(null);
 
@@ -35,7 +33,7 @@ export default function usePeer(addRemoteStream) {
 
     useEffect(() => {
         import('peerjs').then(() => {
-            const peer = peer ? peer : new Peer(getRandomId(), localConfig);
+            const peer = myPeer ? myPeer : new Peer(getRandomId(), localConfig);
 
             peer.on('open', () => {
                 setPeer(peer);
@@ -57,12 +55,12 @@ export default function usePeer(addRemoteStream) {
 
                         call.on('close', () => {
                             console.log("The call has ended");
-                            // setPeerRemoteStream(null)
+                            removeRemoteStream(call.peer);
                         });
 
                         call.on('error', (error) => {
                             console.log(error);
-                            // setPeerRemoteStream(null)
+                            removeRemoteStream(call.peer);
                         });
                     }).catch(error => { console.log(error); });
             });

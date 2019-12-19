@@ -13,10 +13,10 @@ const Home = () => {
 
   const localstream = useUserMedia();
   const [setLocalStream, localVideoRef, handleCanPlayLocal] = useStream();
-  const { connectedPeers } = useWebSocket();
+  const { connectedPeers, messages, sendMessage } = useWebSocket();
   const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams();
   const refsArray = useRef([]);
-  const [myPeer, myPeerID] = usePeer(addRemoteStream);
+  const [myPeer, myPeerID] = usePeer(addRemoteStream, removeRemoteStream);
   const [showConference, setShowConference] = useState(false);
 
   useEffect(() => {
@@ -44,17 +44,19 @@ const Home = () => {
 
     call.on('close', () => {
       console.log("call closed");
+      removeRemoteStream(call.peer);
       call.close();
     });
 
     call.on('error', (error) => {
       console.log("call error", error);
+      removeRemoteStream(call.peer);
       call.close();
     });
   }
 
   const makeCall = () => {
-    if (connectedPeers && connectedPeers.length > 0 === '') {
+    if (connectedPeers && connectedPeers.length < 2) {
       console.log('No Peers to connect with');
       return;
     }
@@ -92,7 +94,7 @@ const Home = () => {
           {showConference &&
             (<>
               <ConnectedPeers connectedPeers={connectedPeers} myPeerID={myPeerID} call={makeCall} />
-              <Chat myPeerID={myPeerID} />
+              <Chat myPeerID={myPeerID} messages={messages} sendMessage={sendMessage} />
             </>)
           }
         </div>

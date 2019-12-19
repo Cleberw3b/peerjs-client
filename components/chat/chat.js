@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import useWebSocket from '../../hooks/useWebSocket';
 import "./chat.scss"
 
-export default function Chat({ myPeerID }) {
+export default function Chat({ myPeerID, messages, sendMessage }) {
 
-    const { messages, sendMessage } = useWebSocket();
     const [message, setMessage] = useState('');
 
     return (
