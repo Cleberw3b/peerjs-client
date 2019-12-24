@@ -65,6 +65,7 @@ const Home = () => {
     let myPeerIndex = peerToConnect.findIndex(peer => peer === myPeerID);
     if (myPeerIndex >= 0) peerToConnect.splice(myPeerIndex, 1);
     for (const peer of peerToConnect) {
+      if (remoteStreams.some(remote => remote.peerId === peer)) return;
       call(peer);
       console.log("calling peer " + peer)
     }
