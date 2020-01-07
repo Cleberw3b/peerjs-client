@@ -9,7 +9,7 @@ import './live.scss'
 
 export default function Live({ myPeerId, myStream, messages, sendMessage, remoteStreams, disconnect }) {
 
-    const [showChat, setShowChat] = useState(true);
+    const [showChat, setShowChat] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [lastMessageCount, setLastMessageCount] = useState(0);
 
