@@ -1,0 +1,48 @@
+.remote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100vw;
+  height: calc(100vh - 70px - 80px);
+  overflow: hidden;
+}
+
+.remote-stream {
+  background-color: rgb(64, 64, 64);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.remote-stream.single {
+  width: 100vw;
+}
+
+.remote-stream.multiple {
+  width: 50vw;
+}
+
+.remote-stream.single > video {
+  max-width: 100vw;
+}
+
+.remote-stream.multiple > video {
+  max-width: 50vw;
+}
+
+@media screen and (max-width: 720px) {
+}
+
+@media screen and (max-width: 512px) {
+  .remote {
+    height: calc(100vh - 70px - 50px);
+  }
+
+  .remote-stream.multiple {
+    width: 50vw;
+  }
+
+  .remote-stream.multiple > video {
+    max-width: 50vw;
+  }
+}

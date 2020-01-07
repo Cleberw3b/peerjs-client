@@ -1,38 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import ConnectedPeers from '../components/connectedPeers/connectedPeers';
-import Chat from '../components/chat/chat';
+import React, { useState, useEffect } from 'react';
 import useWebSocket from '../hooks/useWebSocket';
 import usePeer from '../hooks/usePeer';
-import useStream from '../hooks/useStream';
 import useRemoteStreams from '../hooks/useRemoteStream';
 import useUserMedia from '../hooks/useUserMedia';
-import useAlertBox from '../hooks/useAlertBox';
-import "../components/videoLayout/videoLayout.scss"
+import Live from '../components/live/live';
+import Lobby from '../components/lobby/lobby';
 
 const Home = () => {
 
   const localstream = useUserMedia();
-  const [setLocalStream, localVideoRef, handleCanPlayLocal] = useStream();
-  const { connectedPeers, messages, sendMessage } = useWebSocket();
+  const { socket, connectedPeers, messages, sendMessage, connect, disconnect } = useWebSocket();
   const [remoteStreams, addRemoteStream, removeRemoteStream] = useRemoteStreams();
-  const refsArray = useRef([]);
   const [myPeer, myPeerID] = usePeer(addRemoteStream, removeRemoteStream);
-  const [showConference, setShowConference] = useState(false);
+  const [isConnected, setConnected] = useState(false);
+  const [peersOnline, setPeersOnline] = useState([]);
 
   useEffect(() => {
-    remoteStreams.map(streamData =>
-      refsArray.current[streamData.peerId].srcObject = streamData.stream)
-  }, [remoteStreams])
-
-  useEffect(() => {
-    setLocalStream(localstream);
-  }, [localstream])
-
-  useEffect(() => {
-    if (localstream && connectedPeers && connectedPeers.length > 0 && myPeerID !== undefined) {
-      setShowConference(true);
+    if (connectedPeers && myPeerID !== undefined) {
+      setPeersOnline(connectedPeers.filter(peer => peer !== myPeerID));
     }
-  }, [localstream, connectedPeers, myPeerID])
+  }, [connectedPeers, myPeerID])
+
+  useEffect(() => {
+    return () => { hangUp() };
+  }, [])
+
+  const hangUp = () => {
+    setConnected(false);
+    disconnect(myPeerID);
+    Object.keys(myPeer.connections).map(conn => {
+      if (myPeer.connections[conn][0]) myPeer.connections[conn][0].close();
+    })
+  }
 
   const call = (remoteid) => {
     let call = myPeer.call(remoteid, localstream);
@@ -55,51 +54,22 @@ const Home = () => {
     });
   }
 
-  const makeCall = () => {
-    if (connectedPeers && connectedPeers.length < 2) {
-      console.log('No Peers to connect with');
-      return;
-    }
-
-    let peerToConnect = connectedPeers.map((peer) => peer);
-    let myPeerIndex = peerToConnect.findIndex(peer => peer === myPeerID);
-    if (myPeerIndex >= 0) peerToConnect.splice(myPeerIndex, 1);
-    for (const peer of peerToConnect) {
-      if (remoteStreams.some(remote => remote.peerId === peer)) return;
+  const joinMetting = () => {
+    if (socket.readyState !== 1 || myPeerID === undefined) return;
+    setConnected(true);
+    connect(myPeerID);
+    for (const peer of peersOnline) {
       call(peer);
-      console.log("calling peer " + peer)
     }
   }
 
   return (
-    <>
-      <div id="alertBox"></div>
-      <div className="container">
-        <div className="principal-content">
-          <h1>Democracy Earth ID Validation Conference</h1>
-          <div className="conference-layout" >
-            <div className="main-stream">
-              <video ref={localVideoRef} onCanPlay={handleCanPlayLocal} autoPlay playsInline muted />
-            </div>
-            <div className="listeners-box">
-              {remoteStreams.map((dataStream, i) => (
-                <div key={dataStream.peerId} className="listener-stream">
-                  <video ref={ref => refsArray.current[dataStream.peerId] = ref}
-                    autoPlay playsInline muted />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="side-content">
-          {showConference &&
-            (<>
-              <ConnectedPeers connectedPeers={connectedPeers} myPeerID={myPeerID} call={makeCall} />
-              <Chat myPeerID={myPeerID} messages={messages} sendMessage={sendMessage} />
-            </>)
-          }
-        </div>
-      </div>
+    <>{isConnected
+      ?
+      <Live disconnect={hangUp} messages={messages} myPeerId={myPeerID} myStream={localstream} remoteStreams={remoteStreams} sendMessage={sendMessage} />
+      :
+      <Lobby myStream={localstream} peersOnlineCount={peersOnline.length} myPeerId={myPeerID} join={joinMetting} />
+    }
     </>
   )
 }

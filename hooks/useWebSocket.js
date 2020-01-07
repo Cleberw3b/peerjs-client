@@ -33,6 +33,30 @@ export default function useWebSocket() {
         }
     )
 
+    const connect = useCallback(
+        (peerId) => {
+            let data = JSON.stringify({
+                type: 'connect',
+                message: {
+                    peerId
+                }
+            })
+            socket.send(data);
+        }
+    )
+
+    const disconnect = useCallback(
+        (peerId) => {
+            let data = JSON.stringify({
+                type: 'disconnect',
+                message: {
+                    peerId
+                }
+            })
+            socket.send(data);
+        }
+    )
+
     useEffect(() => {
         const ws = socket ? socket : new WebSocket(socketURL);
 
@@ -82,5 +106,5 @@ export default function useWebSocket() {
         };
     }, [])
 
-    return { connectedPeers, messages, sendMessage };
+    return { socket, connectedPeers, messages, sendMessage, connect, disconnect };
 };

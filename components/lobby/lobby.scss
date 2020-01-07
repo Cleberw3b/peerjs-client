@@ -1,0 +1,97 @@
+.lobby {
+  background: whitesmoke;
+  color: black;
+  height: 100vh;
+  padding: 12px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100px;
+}
+
+.logo > img {
+  height: 80px;
+}
+
+.user {
+  text-align: right;
+}
+
+.live-status {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  max-width: 520px;
+  padding-bottom: 24px;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.ready {
+  margin: 24px 0 12px 0;
+  font-size: 24px;
+}
+
+.participants {
+  margin: 12px 0 24px 0;
+  font-size: 16px;
+}
+
+.enter-room-button {
+  color: #fff !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: #29c41b;
+  padding: 12px;
+  border-radius: 4px;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s ease 0s;
+}
+
+.enter-room-button:hover {
+  text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+  -webkit-box-shadow: 0px 5px 20px -10px rgba(0, 0, 0, 0.57);
+  -moz-box-shadow: 0px 5px 20px -10px rgba(0, 0, 0, 0.57);
+  transition: all 0.4s ease 0s;
+}
+
+@media screen and (max-width: 720px) {
+  .lobby {
+    padding: 0;
+    height: 100vh;
+  }
+
+  .header {
+    height: 80px;
+  }
+
+  .header > * {
+    margin: 0 12px;
+  }
+
+  .logo > img {
+    height: 70px;
+  }
+
+  .live-status {
+    width: 100vw;
+  }
+
+  .ready {
+    margin: 12px 0 6px 0;
+    font-size: 20px;
+  }
+
+  .participants {
+    margin: 6px 0 12px 0;
+    font-size: 14px;
+  }
+}
