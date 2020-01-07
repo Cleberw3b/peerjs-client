@@ -12,7 +12,7 @@ export default function RemoteStream({ remoteStreams }) {
 
   return (
     <div className="remote">
-      {remoteStreams && remoteStreams.map((dataStream, i, arr) =>
+      {remoteStreams.map((dataStream, i, arr) =>
         (
           <div key={dataStream.peerId} className={"remote-stream" + `${arr.length > 1 ? " multiple" : " single"}`}>
             <video onContextMenu={event => event.preventDefault()}
