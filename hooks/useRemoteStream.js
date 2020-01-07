@@ -18,7 +18,9 @@ export default function useRemoteStreams() {
     const removeRemoteStream = useCallback(
         peerId => {
             setRemoteStreams(async remoteStreams => {
-                let index = remoteStreams.findIndex(remote => remote.peerId === peerId);
+                let index = -1;
+                if (Array.isArray(remoteStreams))
+                    index = remoteStreams.findIndex(remote => remote.peerId === peerId);
                 if (index < 0) return [...remoteStreams];
                 await remoteStreams.splice(index, 1);
                 return [...remoteStreams]
