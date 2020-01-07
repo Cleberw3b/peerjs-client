@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import Chat from '../chat/chat'
 import CallButton from '../callButton/callButton';
 import ChatIcon from '../icons/chat';
-import LocalStream from '../localStream/LocalStream';
+import LocalStream from '../localStream/localStream';
 import RemoteStream from '../remoteStream/remoteStream';
 import './live.scss'
 

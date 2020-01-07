@@ -1,5 +1,5 @@
 import React from 'react'
-import LocalStream from '../localStream/LocalStream';
+import LocalStream from '../localStream/localStream';
 import "./lobby.scss"
 
 export default function Lobby({ myStream, peersOnlineCount, myPeerId, join }) {
