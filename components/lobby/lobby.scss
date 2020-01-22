@@ -43,7 +43,13 @@
   font-size: 16px;
 }
 
+.lobby-button-box {
+  display: flex;
+  flex-direction: row;
+}
+
 .enter-room-button {
+  margin: 0 2px;
   color: #fff !important;
   text-transform: uppercase;
   text-decoration: none;

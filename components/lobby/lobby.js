@@ -24,8 +24,13 @@ export default function Lobby({ myStream, peersOnlineCount, myPeerId, join }) {
                     {peersOnlineCount === 1 && `${peersOnlineCount} participant online`}
                     {peersOnlineCount > 1 && `${peersOnlineCount} participants online`}
                 </div>
-                <div className="enter-room-button" onClick={() => join()}>
-                    Join Meeting
+                <div className="lobby-button-box">
+                    <div className="enter-room-button" onClick={() => join()}>
+                        Join as Member
+                    </div>
+                    <div className="enter-room-button" onClick={() => join(true)}>
+                        Join as Applicant
+                    </div>
                 </div>
             </div>
         </div>
