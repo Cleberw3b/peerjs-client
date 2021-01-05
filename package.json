@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@zeit/next-sass": "^1.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "form-data": "^3.0.0",
     "isomorphic-ws": "^4.0.1",
     "next": "9.3.2",
